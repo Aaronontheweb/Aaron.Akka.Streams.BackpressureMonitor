@@ -1,12 +1,13 @@
 <Project>
   <PropertyGroup>
-    <Copyright>Copyright © 2020 Your Company</Copyright>
-    <Authors>Your Authors</Authors>
+    <Copyright>Copyright © 2020-2021 Aaron Stannard</Copyright>
+    <Authors>Aaronontheweb</Authors>
     <VersionPrefix>0.1.0</VersionPrefix>
     <PackageReleaseNotes>First release</PackageReleaseNotes>
     <PackageIconUrl>
     </PackageIconUrl>
     <PackageProjectUrl>
+      https://github.com/Aaronontheweb/Aaron.Akka.Streams.BackpressureMonitor
     </PackageProjectUrl>
     <PackageLicenseUrl>
     </PackageLicenseUrl>
@@ -15,7 +16,7 @@
   <PropertyGroup>
     <LibraryFramework>netstandard2.0</LibraryFramework>
     <TestsNetCoreFramework>netcoreapp3.1</TestsNetCoreFramework>
-    <NBenchVersion>1.2.2</NBenchVersion>
+    <AkkaVersion>1.4.27</AkkaVersion>
     <XunitVersion>2.4.1</XunitVersion>
     <TestSdkVersion>16.9.4</TestSdkVersion>
   </PropertyGroup>

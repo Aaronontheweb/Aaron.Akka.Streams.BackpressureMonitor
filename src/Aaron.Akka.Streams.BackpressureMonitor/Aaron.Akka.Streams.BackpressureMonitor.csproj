@@ -1,10 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\common.props" />
-
-
   <PropertyGroup>
     <TargetFramework>$(LibraryFramework)</TargetFramework>
-    <Description>Your description here.</Description>
+    <Description>Built-in Akka.Streams stages for backpressure monitoring.</Description>
   </PropertyGroup>
 
 </Project>
