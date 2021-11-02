@@ -17,6 +17,12 @@ namespace Aaron.Akka.Streams.Dsl
         {
             return flow.Via(new LogBackpressure<T>(backPressureLogLevel));
         }
+        
+        public static Source<T, TMat> BackpressureMonitor<T, TMat>(this Source<T, TMat> flow, 
+            LogLevel backPressureLogLevel = LogLevel.DebugLevel)
+        {
+            return flow.Via(new LogBackpressure<T>(backPressureLogLevel));
+        }
     }
     
     public sealed class LogBackpressure<T> : SimpleLinearGraphStage<T>
