@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using Akka.Event;
 using Akka.Streams;
+using Akka.Streams.Dsl;
 using Akka.Streams.Implementation;
 using Akka.Streams.Implementation.Fusing;
 using Akka.Streams.Implementation.Stages;
@@ -8,6 +10,14 @@ using Akka.Streams.Stage;
 
 namespace Aaron.Akka.Streams.Dsl
 {
+    public static class BackpressureExtensions
+    {
+        public static IFlow<T, TMat> BackpressureMonitor<T, TMat>(this IFlow<T, TMat> flow,
+            LogLevel backPressureLogLevel = LogLevel.DebugLevel)
+        {
+            return flow.Via(new LogBackpressure<T>(backPressureLogLevel));
+        }
+    }
     
     public sealed class LogBackpressure<T> : SimpleLinearGraphStage<T>
     {
@@ -17,6 +27,8 @@ namespace Aaron.Akka.Streams.Dsl
         {
             private readonly LogBackpressure<T> _stage;
             private readonly LogLevel _backPressureLevel;
+            private bool _isBackpressured = false;
+            private DateTimeOffset? _backPressureStart = null;
 
             public Logic(LogBackpressure<T> stage) : base(stage.Shape)
             {
@@ -29,12 +41,31 @@ namespace Aaron.Akka.Streams.Dsl
 
             public override void OnPush()
             {
-                Push(_stage.Outlet, Grab(_stage.Inlet));
+                // Data is being pushed by producer - here we check if an outlet is ready
+                if(IsAvailable(_stage.Outlet))
+                    Push(_stage.Outlet, Grab(_stage.Inlet)); // no backpressure
+                else // backpressure
+                {
+                    if (!_isBackpressured)
+                    {
+                        // backpressure detected for the first time
+                        _isBackpressured = true;
+                        _backPressureStart = DateTimeOffset.UtcNow;
+                        Log.Log(_backPressureLevel, "Backpressure detected. Measuring duration starting now...");
+                    }
+                }
             }
 
             public override void OnPull()
             {
-                throw new NotImplementedException();
+                Pull(_stage.Inlet);
+                if (_isBackpressured)
+                {
+                    _isBackpressured = false;
+                    var duration = DateTimeOffset.UtcNow - _backPressureStart;
+                    _backPressureStart = null;
+                    Log.Log(_backPressureLevel, "Backpressure relieved. Total backpressure wait time: {0}", duration);
+                }
             }
         }
 
@@ -45,7 +76,7 @@ namespace Aaron.Akka.Streams.Dsl
         public LogBackpressure(LogLevel backPressureLogLevel = LogLevel.DebugLevel)
         {
             _backPressureLogLevel = backPressureLogLevel;
-            InitialAttributes = Module.
+            InitialAttributes = Attributes.CreateName($"[BackPressureMon][IN:{Inlet.Name}]-->[OUT:{Outlet.Name}]");
         }
 
         /// <summary>
