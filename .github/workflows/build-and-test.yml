@@ -18,7 +18,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [windows-latest]
 
     steps:
     - uses: actions/checkout@v2
@@ -28,4 +28,4 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Run FAKE
-      run: ./build.sh all
+      run: ./build.cmd all
