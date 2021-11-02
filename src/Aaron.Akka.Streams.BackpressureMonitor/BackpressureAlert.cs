@@ -17,16 +17,85 @@ namespace Aaron.Akka.Streams.Dsl
         /// </summary>
         private static readonly TimeSpan DefaultBackPressureThreshold = TimeSpan.FromMilliseconds(40);
         
-        public static IFlow<T, TMat> BackpressureAlert<T, TMat>(this IFlow<T, TMat> flow,
+        /// <summary>
+        /// Creates a BackpressureAlert stage that logs backpressure messages at the configured loglevel
+        /// and also records how long backpressure was observed prior to receiving a fresh Pull from
+        /// downstream.
+        /// </summary>
+        /// <param name="flow">The upstream <see cref="Flow{TIn,TOut,TMat}"/></param>
+        /// <param name="backPressureLogLevel">
+        ///     The <see cref="LogLevel"/> to record backpressure warnings.
+        ///     Defaults to <see cref="LogLevel.DebugLevel"/>.
+        /// </param>
+        /// <param name="backpressureThreshold">
+        ///     The minimum duration to test for backpressure. Defaults to 40ms.
+        ///     The higher this value, the less sensitivity this alert has to backpressure.
+        /// </param>
+        /// <typeparam name="TIn">Input type.</typeparam>
+        /// <typeparam name="TOut">Output type.</typeparam>
+        /// <typeparam name="TMat">Materialization type.</typeparam>
+        /// <returns>A new <see cref="Flow{TIn,TOut,TMat}"/></returns>
+        public static Flow<TIn, TOut, TMat> BackpressureAlert<TIn, TOut, TMat>(this Flow<TIn, TOut, TMat> flow,
+            LogLevel backPressureLogLevel = LogLevel.DebugLevel, TimeSpan? backpressureThreshold = null)
+        {
+            return (Flow<TIn, TOut, TMat>)InternalBackpressureAlert(flow, backPressureLogLevel, backpressureThreshold);
+        }
+        
+        /// <summary>
+        /// INTERNAL API
+        /// </summary>
+        private static IFlow<T, TMat> InternalBackpressureAlert<T, TMat>(this IFlow<T, TMat> flow,
             LogLevel backPressureLogLevel = LogLevel.DebugLevel, TimeSpan? backpressureThreshold = null)
         {
             return flow.Via(new BackpressureAlert<T>(backpressureThreshold ?? DefaultBackPressureThreshold, backPressureLogLevel));
         }
-        
-        public static Source<T, TMat> BackpressureAlert<T, TMat>(this Source<T, TMat> flow, 
+
+        /// <summary>
+        /// Creates a BackpressureAlert stage that logs backpressure messages at the configured loglevel
+        /// and also records how long backpressure was observed prior to receiving a fresh Pull from
+        /// downstream.
+        /// </summary>
+        /// <param name="flow">The upstream <see cref="Flow{TIn,TOut,TMat}"/></param>
+        /// <param name="backPressureLogLevel">
+        ///     The <see cref="LogLevel"/> to record backpressure warnings.
+        ///     Defaults to <see cref="LogLevel.DebugLevel"/>.
+        /// </param>
+        /// <param name="backpressureThreshold">
+        ///     The minimum duration to test for backpressure. Defaults to 40ms.
+        ///     The higher this value, the less sensitivity this alert has to backpressure.
+        /// </param>
+        /// <typeparam name="T">Output type.</typeparam>
+        /// <typeparam name="TMat">Materialization type.</typeparam>
+        /// <returns>A new <see cref="Source{T,TMat}"/></returns>
+        public static Source<T, TMat> BackpressureAlert<T, TMat>(this Source<T, TMat> flow,
             LogLevel backPressureLogLevel = LogLevel.DebugLevel, TimeSpan? backpressureThreshold = null)
         {
-            return flow.Via(new BackpressureAlert<T>(backpressureThreshold ?? DefaultBackPressureThreshold, backPressureLogLevel));
+            return (Source<T, TMat>) InternalBackpressureAlert(flow, backPressureLogLevel, backpressureThreshold);
+        }
+
+        /// <summary>
+        /// Creates a BackpressureAlert stage that logs backpressure messages at the configured loglevel
+        /// and also records how long backpressure was observed prior to receiving a fresh Pull from
+        /// downstream.
+        /// </summary>
+        /// <param name="flow">The upstream <see cref="Flow{TIn,TOut,TMat}"/></param>
+        /// <param name="backPressureLogLevel">
+        ///     The <see cref="LogLevel"/> to record backpressure warnings.
+        ///     Defaults to <see cref="LogLevel.DebugLevel"/>.
+        /// </param>
+        /// <param name="backpressureThreshold">
+        ///     The minimum duration to test for backpressure. Defaults to 40ms.
+        ///     The higher this value, the less sensitivity this alert has to backpressure.
+        /// </param>
+        /// <typeparam name="TOut">Output type.</typeparam>
+        /// <typeparam name="TMat">Materialization type.</typeparam>
+        /// <typeparam name="TClosed">The key type.</typeparam>
+        /// <returns>A new <see cref="SubFlow{TOut,TMat,TClosed}"/></returns>
+        public static SubFlow<TOut, TMat, TClosed> BackpressureAlert<TOut, TMat, TClosed>(
+            this SubFlow<TOut, TMat, TClosed> flow, LogLevel backPressureLogLevel = LogLevel.DebugLevel,
+            TimeSpan? backpressureThreshold = null)
+        {
+            return (SubFlow<TOut, TMat, TClosed>)InternalBackpressureAlert(flow, backPressureLogLevel, backpressureThreshold);
         }
     }
     
@@ -133,7 +202,5 @@ namespace Aaron.Akka.Streams.Dsl
         /// </summary>
         /// <returns>TBD</returns>
         public override string ToString() => $"BackpressureAlert<{typeof(T)}>";
-
-        
     }
 }
