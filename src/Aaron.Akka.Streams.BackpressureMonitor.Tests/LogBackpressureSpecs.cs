@@ -27,7 +27,28 @@ namespace Aaron.Akka.Streams.BackpressureMonitor.Tests
 
                 await source;
             });
-           
+        }
+        
+        [Fact]
+        public async Task ShouldLogWithBackpressure()
+        {
+            await WithinAsync(TimeSpan.FromSeconds(10), async () =>
+            {
+                await EventFilter.Info(contains: "backpressure").ExpectAsync(1, RemainingOrDefault, async () =>
+                {
+                    var source = Source.From(Enumerable.Repeat(0, 100))
+                        .BackpressureMonitor(LogLevel.InfoLevel)
+                        .SelectAsync(1, async i =>
+                        {
+                            await Task.Delay(100);
+                            return i;
+                        })
+                        .RunWith(Sink.Ignore<int>(), Sys.Materializer());
+
+                    await source;
+                });
+            });
+
         }
     }
 }
