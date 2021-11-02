@@ -202,7 +202,5 @@ namespace Aaron.Akka.Streams.Dsl
         /// </summary>
         /// <returns>TBD</returns>
         public override string ToString() => $"BackpressureAlert<{typeof(T)}>";
-
-        
     }
 }
