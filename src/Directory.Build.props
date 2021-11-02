@@ -10,6 +10,7 @@
       https://github.com/Aaronontheweb/Aaron.Akka.Streams.BackpressureMonitor
     </PackageProjectUrl>
     <PackageLicenseUrl>
+      https://github.com/Aaronontheweb/Aaron.Akka.Streams.BackpressureMonitor/blob/master/LICENSE
     </PackageLicenseUrl>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>

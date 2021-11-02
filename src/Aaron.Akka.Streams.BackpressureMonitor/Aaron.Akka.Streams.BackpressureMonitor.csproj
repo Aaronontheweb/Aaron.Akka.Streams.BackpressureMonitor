@@ -3,5 +3,8 @@
     <TargetFramework>$(LibraryFramework)</TargetFramework>
     <Description>Built-in Akka.Streams stages for backpressure monitoring.</Description>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Akka.Streams" Version="$(AkkaVersion)" />
+  </ItemGroup>
 
 </Project>
