@@ -6,9 +6,9 @@ on:
       - '*'
 
 jobs:
-  build-and-test:
+  publish-nuget:
 
-    name: build-and-test-${{matrix.os}}
+    name: publish-nuget
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
