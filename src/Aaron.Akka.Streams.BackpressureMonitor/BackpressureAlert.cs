@@ -17,37 +17,39 @@ namespace Aaron.Akka.Streams.Dsl
         /// </summary>
         private static readonly TimeSpan DefaultBackPressureThreshold = TimeSpan.FromMilliseconds(40);
         
-        public static IFlow<T, TMat> BackpressureMonitor<T, TMat>(this IFlow<T, TMat> flow,
+        public static IFlow<T, TMat> BackpressureAlert<T, TMat>(this IFlow<T, TMat> flow,
             LogLevel backPressureLogLevel = LogLevel.DebugLevel, TimeSpan? backpressureThreshold = null)
         {
-            return flow.Via(new LogBackpressure<T>(backpressureThreshold ?? DefaultBackPressureThreshold, backPressureLogLevel));
+            return flow.Via(new BackpressureAlert<T>(backpressureThreshold ?? DefaultBackPressureThreshold, backPressureLogLevel));
         }
         
-        public static Source<T, TMat> BackpressureMonitor<T, TMat>(this Source<T, TMat> flow, 
+        public static Source<T, TMat> BackpressureAlert<T, TMat>(this Source<T, TMat> flow, 
             LogLevel backPressureLogLevel = LogLevel.DebugLevel, TimeSpan? backpressureThreshold = null)
         {
-            return flow.Via(new LogBackpressure<T>(backpressureThreshold ?? DefaultBackPressureThreshold, backPressureLogLevel));
+            return flow.Via(new BackpressureAlert<T>(backpressureThreshold ?? DefaultBackPressureThreshold, backPressureLogLevel));
         }
     }
     
-    public sealed class LogBackpressure<T> : SimpleLinearGraphStage<T>
+    public sealed class BackpressureAlert<T> : SimpleLinearGraphStage<T>
     {
         private readonly LogLevel _backPressureLogLevel;
         private readonly TimeSpan _backPressureThreshold;
         
         private sealed class Logic : TimerGraphStageLogic, IInHandler, IOutHandler
         {
-            private readonly LogBackpressure<T> _stage;
+            private readonly BackpressureAlert<T> _stage;
             private readonly LogLevel _backPressureLevel;
+            private readonly string _stageName;
             private bool _waitingDemand = true;
             private bool _isBackpressured = false;
             private readonly TimeSpan _pressureThreshold;
             private long _backPressureDeadline = 0;
             private long _backPressureStart = 0;
 
-            public Logic(LogBackpressure<T> stage) : base(stage.Shape)
+            public Logic(BackpressureAlert<T> stage, string stageName) : base(stage.Shape)
             {
                 _stage = stage;
+                _stageName = stageName;
                 _pressureThreshold = stage._backPressureThreshold;
                 _backPressureLevel = stage._backPressureLogLevel;
 
@@ -77,7 +79,7 @@ namespace Aaron.Akka.Streams.Dsl
                     var duration = TimeSpan.FromTicks(DateTimeOffset.UtcNow.Ticks - _backPressureStart);
                     _backPressureStart = 0L;
                     
-                    Log.Log(_backPressureLevel, "Backpressure relieved. Total backpressure wait time: {0}", duration);
+                    Log.Log(_backPressureLevel, "[{0}] Backpressure relieved. Total backpressure wait time: {1}", _stageName, duration);
                 }
             }
             
@@ -90,7 +92,7 @@ namespace Aaron.Akka.Streams.Dsl
             {
                 if (!_isBackpressured && (_waitingDemand && _backPressureDeadline - DateTimeOffset.UtcNow.Ticks < 0))
                 {
-                    Log.Log(_backPressureLevel, "Backpressure detected. Measuring duration starting now...");
+                    Log.Log(_backPressureLevel, "[{0}] Backpressure detected. Measuring duration starting now...", _stageName);
                     _isBackpressured = true;
                     _backPressureStart = DateTimeOffset.UtcNow.Ticks;
                 }
@@ -103,14 +105,15 @@ namespace Aaron.Akka.Streams.Dsl
         }
 
         /// <summary>
-        /// Creates a new diagnostic <see cref="LogBackpressure{T}"/> stage.
+        /// Creates a new diagnostic <see cref="BackpressureAlert{T}"/> stage.
         /// </summary>
+        /// <param name="backPressureThreshold">The threshold we use for testing for backpressure. Defaults to 40ms.</param>
         /// <param name="backPressureLogLevel">The <see cref="LogLevel"/> to use while recording backpressure.</param>
-        public LogBackpressure(TimeSpan backPressureThreshold, LogLevel backPressureLogLevel = LogLevel.DebugLevel)
+        public BackpressureAlert(TimeSpan backPressureThreshold, LogLevel backPressureLogLevel = LogLevel.DebugLevel)
         {
             _backPressureThreshold = backPressureThreshold;
             _backPressureLogLevel = backPressureLogLevel;
-            InitialAttributes = Attributes.CreateName($"[BackPressureMon][IN:{Inlet.Name}]-->[OUT:{Outlet.Name}]");
+            InitialAttributes = Attributes.CreateName($"BackpressureAlert");
         }
 
         /// <summary>
@@ -123,13 +126,13 @@ namespace Aaron.Akka.Streams.Dsl
         /// </summary>
         /// <param name="inheritedAttributes">TBD</param>
         /// <returns>TBD</returns>
-        protected override GraphStageLogic CreateLogic(Attributes inheritedAttributes) => new Logic(this);
+        protected override GraphStageLogic CreateLogic(Attributes inheritedAttributes) => new Logic(this, inheritedAttributes.GetNameLifted());
 
         /// <summary>
         /// TBD
         /// </summary>
         /// <returns>TBD</returns>
-        public override string ToString() => "LogBackpressure";
+        public override string ToString() => $"BackpressureAlert<{typeof(T)}>";
 
         
     }
