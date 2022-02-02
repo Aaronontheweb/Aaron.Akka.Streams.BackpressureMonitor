@@ -15,7 +15,7 @@ namespace Aaron.Akka.Streams.Dsl
         /// <summary>
         /// Detects backpressure within a 40ms window.
         /// </summary>
-        private static readonly TimeSpan DefaultBackPressureThreshold = TimeSpan.FromMilliseconds(40);
+        private static readonly TimeSpan DefaultBackPressureThreshold = TimeSpan.FromMilliseconds(500);
         
         /// <summary>
         /// Creates a BackpressureAlert stage that logs backpressure messages at the configured loglevel
