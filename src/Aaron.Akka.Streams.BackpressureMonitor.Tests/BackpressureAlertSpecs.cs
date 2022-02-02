@@ -39,7 +39,7 @@ namespace Aaron.Akka.Streams.BackpressureMonitor.Tests
                 await EventFilter.Info(contains: "backpressure").ExpectAsync(4, RemainingOrDefault, async () =>
                 {
                     var source = Source.From(Enumerable.Repeat(0, 3))
-                        .BackpressureAlert(LogLevel.InfoLevel)
+                        .BackpressureAlert(LogLevel.InfoLevel, TimeSpan.FromMilliseconds(40))
                         .SelectAsync(1, async i =>
                         {
                             await Task.Delay(100);
@@ -60,7 +60,7 @@ namespace Aaron.Akka.Streams.BackpressureMonitor.Tests
                 await EventFilter.Info(contains: "MyName").ExpectAsync(4, RemainingOrDefault, async () =>
                 {
                     var source = Source.From(Enumerable.Repeat(0, 3))
-                        .BackpressureAlert(LogLevel.InfoLevel).WithAttributes(Attributes.CreateName("MyName"))
+                        .BackpressureAlert(LogLevel.InfoLevel, TimeSpan.FromMilliseconds(40)).WithAttributes(Attributes.CreateName("MyName"))
                         .SelectAsync(1, async i =>
                         {
                             await Task.Delay(100);
@@ -83,7 +83,7 @@ namespace Aaron.Akka.Streams.BackpressureMonitor.Tests
                     var parallelProcessing = (Flow<int, int, NotUsed>)Flow.Create<int>()
                         .GroupBy(10, i => i % 10)
                         //.Grouped(1)
-                        .BackpressureAlert(LogLevel.InfoLevel)
+                        .BackpressureAlert(LogLevel.InfoLevel, TimeSpan.FromMilliseconds(40))
                         .SelectAsync(1, async i =>
                         {
                             await Task.Delay(100);
