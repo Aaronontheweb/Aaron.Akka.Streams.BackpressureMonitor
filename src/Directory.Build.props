@@ -18,7 +18,7 @@ Added support for attaching `BackpressureAlert` to `SubFlow&lt;TOut, TMat, TClos
   <PropertyGroup>
     <LibraryFramework>netstandard2.0</LibraryFramework>
     <TestsNetCoreFramework>netcoreapp3.1</TestsNetCoreFramework>
-    <AkkaVersion>1.4.45</AkkaVersion>
+    <AkkaVersion>1.4.48</AkkaVersion>
     <XunitVersion>2.4.2</XunitVersion>
     <TestSdkVersion>17.3.2</TestSdkVersion>
   </PropertyGroup>
