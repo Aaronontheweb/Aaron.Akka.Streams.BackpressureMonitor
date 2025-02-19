@@ -2,9 +2,10 @@
   <PropertyGroup>
     <TargetFramework>$(LibraryFramework)</TargetFramework>
     <Description>Built-in Akka.Streams stages for backpressure monitoring.</Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Akka.Streams" Version="$(AkkaVersion)" />
-  </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Akka.Streams" />
+  </ItemGroup>
 </Project>
