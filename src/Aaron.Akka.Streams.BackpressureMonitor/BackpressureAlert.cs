@@ -154,20 +154,25 @@ namespace Aaron.Akka.Streams.Dsl
                     var duration = TimeSpan.FromTicks(DateTimeOffset.UtcNow.Ticks - _backPressureStart);
                     _backPressureStart = 0;
                     
-                    Log.Log(_backPressureLevel, "[{0}] Backpressure relieved. Total backpressure wait time: {1}", _stageName, duration);
+                    Log.Log(_backPressureLevel, "[{0}] Backpressure relieved. Total backpressure wait time: {1}",
+                        [_stageName, duration]);
                 }
             }
             
-            public void OnDownstreamFinish()
+            public void OnDownstreamFinish(Exception e)
             {
-                CompleteStage();
+                if (e != null)
+                    FailStage(e);
+                else
+                    CompleteStage();
             }
 
             protected override void OnTimer(object timerKey)
             {
                 if (!_isBackpressured && (_waitingDemand && _backPressureDeadline - DateTimeOffset.UtcNow.Ticks < 0))
                 {
-                    Log.Log(_backPressureLevel, "[{0}] Backpressure detected. Measuring duration starting now...", _stageName);
+                    Log.Log(_backPressureLevel, "[{0}] Backpressure detected. Measuring duration starting now...",
+                        [_stageName]);
                     _isBackpressured = true;
                     _backPressureStart = DateTimeOffset.UtcNow.Ticks;
                 }
