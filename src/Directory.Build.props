@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project>
   <PropertyGroup>
     <Copyright>Copyright © 2020-$([System.DateTime]::Now.Year) Aaron Stannard</Copyright>
@@ -9,7 +10,6 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <LangVersion>latest</LangVersion>
-    <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AnalysisLevel>latest-all</AnalysisLevel>
