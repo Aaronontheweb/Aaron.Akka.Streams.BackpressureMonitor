@@ -73,7 +73,7 @@ namespace Aaron.Akka.Streams.BackpressureMonitor.Tests
             });
         }
         
-        [Fact(Skip = "Racy, but does verify that the stage logs")]
+        [Fact()]
         public async Task ShouldLogWithBackpressureWithSubflows()
         {
             await WithinAsync(TimeSpan.FromSeconds(10), async () =>
