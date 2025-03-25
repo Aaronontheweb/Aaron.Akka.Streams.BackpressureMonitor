@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <!-- Akka.NET Dependencies -->
-    <PackageVersion Include="Akka.Streams" Version="1.5.38" />
+    <PackageVersion Include="Akka.Streams" Version="1.5.40" />
 
     <!-- Testing Dependencies -->
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
