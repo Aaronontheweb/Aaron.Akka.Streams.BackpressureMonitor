@@ -13,7 +13,7 @@
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.7" />
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
-    <PackageVersion Include="Akka.TestKit.Xunit2" Version="1.5.38" />
+    <PackageVersion Include="Akka.TestKit.Xunit2" Version="1.5.41" />
 
     <!-- Build & Code Quality -->
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
